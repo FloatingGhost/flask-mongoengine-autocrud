@@ -35,10 +35,10 @@ The following endpoints are created
 | Method | URL Pattern | Returns | Options |
 |--------|-------------|---------|--------|
 | GET    | /           | List of all items | page (int), size (int), for pagination |
-| GET    | /<id>       | A single item | |
+| GET    | /\<id\>       | A single item | |
 | POST   | /           | The created item | All valid mongoengine field names in POST body |
-| PATCH  | /<id>       | The modified item | All valid mongoengine field names |
-| DELETE | /<id>       | Success status | |
+| PATCH  | /\<id\>       | The modified item | All valid mongoengine field names |
+| DELETE | /\<id\>       | Success status | |
 | POST   | /search     | List of matching items | See search section |
 
 For example
