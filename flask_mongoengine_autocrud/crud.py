@@ -1,6 +1,7 @@
 from flask import Blueprint, request, Response
 import json
 from bson import json_util
+from .json import default
 
 
 def load_json(data):
@@ -9,7 +10,7 @@ def load_json(data):
 
 def dump_json(output, status=200):
     return Response(
-        response=json.dumps(output, default=json_util.default),
+        response=json.dumps(output, default=default),
         status=status,
         content_type="application/json"
     )
@@ -66,8 +67,16 @@ def create_crud(
                 "verbose": str(ex)
             }, status=400)
 
+        created = mongoengine_object(**arguments)
         try:
-            created = mongoengine_object(**arguments)
+            created.validate()
+        except Exception as ex:
+            return dump_json({
+                "error": "Not a valid object",
+                "verbose": str(ex)
+            }, status=400)
+
+        try:
             created.save()
         except Exception as ex:
             return dump_json({
@@ -153,9 +162,9 @@ def create_crud(
         return dump_json([x.to_mongo() for x in matching])
 
     this_bp.add_url_rule("/", view_func=get_objs)
-    this_bp.add_url_rule("/<id>", view_func=get_obj)
-    this_bp.add_url_rule("/", view_func=new_obj, methods=["PATCH"])
     this_bp.add_url_rule("/search", view_func=search, methods=["POST"])
-    this_bp.add_url_rule("/<id>", view_func=edit_obj, methods=["POST"])
+    this_bp.add_url_rule("/", view_func=new_obj, methods=["POST"])
+    this_bp.add_url_rule("/<id>", view_func=get_obj)
+    this_bp.add_url_rule("/<id>", view_func=edit_obj, methods=["PATCH"])
     this_bp.add_url_rule("/<id>", view_func=delete_obj, methods=["DELETE"])
     return this_bp

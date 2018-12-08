@@ -1,4 +1,4 @@
 mongoengine
+pymongo
 flask
-bson
 pytest
